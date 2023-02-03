@@ -4,13 +4,23 @@ import json
 
 url = "https://api.ra3battle.cn/api/server/status/detail"
 
-request=req.Request(url)
 
-with req.urlopen(request) as response:
-    data=response.read().decode("utf-8")
-# print(data)
+def getJson():
+    request=req.Request(url)
+    with req.urlopen(request) as response:
+        data=response.read().decode("utf-8")
+    # root=bs4.BeautifulSoup(data, "html.parser")
+    data = json.loads(data)
+    return data
 
-root=bs4.BeautifulSoup(data, "html.parser")
-y = json.loads(data)
 
-print(y["players"]['id'])
+
+def main():
+    data = getJson()
+    for i in data["players"]:
+        print(i['name'])
+
+    
+
+if __name__ == "__main__":
+    main()
