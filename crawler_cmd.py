@@ -2,17 +2,12 @@ import urllib.request as req
 import bs4
 import json
 import os
-import tkinter
+from time import sleep
 
 url = "https://api.ra3battle.cn/api/server/status/detail"
 fav_map = ["200w苦战无人岛困难版.map", "小岛登陆战.map", 
 "小岛登陆战2.0.map", "苦战无人岛路人版.map", "解放战争正式版.map"]
 fav_mode = ["塔防", ""]
-
-window = tkinter.Tk()
-window.title('RA3 Battlenet')
-window.geometry('550x300')
-window.iconbitmap('favicon.ico')
 
 
 def getJson():
@@ -24,33 +19,45 @@ def getJson():
     return data
 
 def print_data():
+    os.system('cls')
     data = getJson()
     for i in data["games"]:
         if (i['mod'] == "RA3" and i['gamemode'] == "openstaging"):
-            # Room name
             x = i['hostname'].split()
-            print("Room: " + x[1] )
-
-            window["background"] = "#000000"
-
-            #Player name
-            print("Player: ", end='')
-            for j in i['players']:
-                print(j['name'] + " ", end='')
-            print()
-
-            # Map name
             map = os.path.basename(os.path.normpath(i['mapname']))
-            print(map)
-            print()
 
+            if (x[1]==fav_mode[0] or map==fav_map[0] or map==fav_map[1] or map==fav_map[2] or map==fav_map[3] or map==fav_map[4]):
+                print(x[1])
+                print("Player: ", end='')
+                for j in i['players']:
+                    print(j['name'] + " ", end='')
+                print()
+                return
+            else:
+                # Room name
+                
+                print("Room: " + x[1] )
+
+
+                #Player name
+                print("Player: ", end='')
+                for j in i['players']:
+                    print(j['name'] + " ", end='')
+                print()
+
+                # Map name
+                
+                print(map)
+                print()
+            
+
+                
 def main():
     
-    while (true):
+    print("Opearting")
+    while(1):
         print_data()
-        # window["background"] = "#C9C9C9"
-        window.mainloop()
-        sleep(2000)
+        sleep(3)
         
 
 if __name__ == "__main__":
