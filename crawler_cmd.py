@@ -19,36 +19,37 @@ def getJson():
     return data
 
 def print_data():
+    found = False
     os.system('cls')
     data = getJson()
+
+    # Check all existing room one by one
     for i in data["games"]:
+        # Filiter waiting room
         if (i['mod'] == "RA3" and i['gamemode'] == "openstaging"):
             x = i['hostname'].split()
             map = os.path.basename(os.path.normpath(i['mapname']))
 
             if (x[1]==fav_mode[0] or map==fav_map[0] or map==fav_map[1] or map==fav_map[2] or map==fav_map[3] or map==fav_map[4]):
-                print(x[1])
-                print("Player: ", end='')
-                for j in i['players']:
-                    print(j['name'] + " ", end='')
-                print()
-                return
-            else:
-                # Room name
+                found=True
                 
-                print("Room: " + x[1] )
+            # Room name
+            print("Room: " + x[1] )
+            
+            #Player name
+            print("Player: ", end='')
+            for j in i['players']:
+                print(j['name'] + " ", end='')
+            print()
 
+            # Map name
+            print(map)
+            print()
 
-                #Player name
-                print("Player: ", end='')
-                for j in i['players']:
-                    print(j['name'] + " ", end='')
-                print()
+    if (found==True):
+        for i in range(1, 50):
+            print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF") 
 
-                # Map name
-                
-                print(map)
-                print()
             
 
                 
