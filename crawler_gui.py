@@ -7,23 +7,26 @@ import threading
 
 url = "https://api.ra3battle.cn/api/server/status/detail"
 keyword = ["200w苦战无人岛困难版.map", "小岛登陆战.map", 
-"小岛登陆战2.0.map", "苦战无人岛路人版.map", "解放战争正式版.map", "塔防", "pve", "电脑"]
+"小岛登陆战2.0.map", "苦战无人岛路人版.map", "解放战争正式版.map", "塔防", "pve", "电脑", "人机"]
 
+# Create Tkinter GUI
 window = tk.Tk()
 window.title("RA3 BattleNet")
-window.geometry("500x250")
+window.geometry("400x550")
 
+# Check room name contains keyword
 def check_word(string, word):
     return string.find(word) != -1
 
+# Obtain Json data
 def getJson():
     request=req.Request(url)
     with req.urlopen(request) as response:
         data=response.read().decode("utf-8")
-    # root=bs4.BeautifulSoup(data, "html.parser")
     data = json.loads(data)
     return data
 
+# Main loop to update result
 def print_data():
     while(True):
         found = False
@@ -32,24 +35,20 @@ def print_data():
         result = ""
         window.configure(bg='#F0F0F0')
         
-        
-
-        # Check all existing room one by one
-
+        # Check all game room one by one
         for i in data["games"]:
-            # Filiter waiting room
+            # Filiter to RA3 waiting room
             if (i['mod'] == "RA3" and i['gamemode'] == "openstaging"):
+                # x[1]=room name, map=map name
                 x = i['hostname'].split()
+                x[1]=x[1].lower()
                 map = os.path.basename(os.path.normpath(i['mapname']))
 
+                # Compare room/map name with keyword
                 for index in range(len(keyword)):
-                    x[1]=x[1].lower()
-                    if (check_word(x[1], keyword[index])):
+                    if (check_word(x[1], keyword[index]) or check_word(map, keyword[index])):
+                        #Set background to red if found
                         window.configure(bg='red')
-
-                # if (x[1]==keyword[0] or map==keyword[0] or map==keyword[1] or map==keyword[2] or map==keyword[3] or map==keyword[4] or map==keyword[5]):
-                #     found=True
-                #     window.configure(bg='SystemButtonFace')
                     
                 # Room name
                 print("Room: " + x[1] )
@@ -67,35 +66,17 @@ def print_data():
                 result = result + map + "\n\n\n"
                 print()
 
-        # if (found==True):
-        #     for i in range(1, 50):
-        #         print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF") 
 
         lbl_result["text"] = result
         sleep(3)
-
-            
-
-                
-# def main():
+         
 
 # 建立一個子執行緒
 t = threading.Thread(target = print_data)
-
 # 執行該子執行緒
 t.start()
-
-print("Opearting")
 
 lbl_result = tk.Label(window, text="")
 lbl_result.grid(row=3, column=0, columnspan=2)
 
-
-# while(True):
-#     print_data()
-#     sleep(3)
 window.mainloop()
-        
-
-# if __name__ == "__main__":
-#     main()
