@@ -6,7 +6,6 @@ from time import sleep
 import tkinter as tk
 import threading
 
-
 url = "https://api.ra3battle.cn/api/server/status/detail"
 keyword = ["200w苦战无人岛困难版.map", "小岛登陆战.map", 
 "小岛登陆战2.0.map", "苦战无人岛路人版.map", "解放战争正式版.map", "塔防", "pve", "电脑"]
