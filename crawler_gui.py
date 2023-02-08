@@ -1,5 +1,4 @@
 import urllib.request as req
-import bs4
 import json
 import os
 from time import sleep
