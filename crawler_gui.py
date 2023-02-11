@@ -30,6 +30,7 @@ def getJson():
     data = json.loads(data)
     return data
 
+# Toggle sound when button is pressed
 def btn_sound_onClick():
     global sound
     if (sound==True):
@@ -43,11 +44,11 @@ def btn_sound_onClick():
         sound=True
         return
 
+# Play sound if sound is ON
 def play_sound():
     if (sound==True):
         playsound('beep-01.mp3')
 
-    
 
 # Main loop to update result
 def print_data():
