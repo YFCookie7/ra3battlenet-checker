@@ -2,9 +2,9 @@ import asyncio
 import urllib.request as req
 import json
 import os
-import tkinter as tk
 import threading
-import winsound
+from playsound import playsound
+import customtkinter as tk
 
 url = "https://api.ra3battle.cn/api/server/status/detail"
 keyword = [
@@ -19,13 +19,14 @@ keyword = [
     "pve",
     "电脑",
     "人机",
+    "tf",
 ]
 sound = True
 appear = True
 
 
 # Create Tkinter GUI
-window = tk.Tk()
+window = tk.CTk()
 window.title("RA3 BattleNet")
 window.geometry("350x850")
 window.iconbitmap("favicon.ico")
@@ -91,19 +92,24 @@ def refresh_data():
     data = getJson()
     result = ""
     found = False
+    target = tb_wait_player.get("0.0", "end")
+    target_still_playing = None
 
     # Check all game room one by one
     for i in data["games"]:
         roomname = i["hostname"].split()
-        roomname = roomname[1].lower()
+        if len(roomname) >= 2:
+            roomname = roomname[1].lower()
+        else:
+            roomname = ""
         map = os.path.basename(os.path.normpath(i["mapname"]))
         # Filiter to RA3 waiting room
         if i["mod"] == "RA3" and i["gamemode"] == "openstaging":
             # roomname=room name, map=map name
-            print("Room: " + roomname)
-            print("Player: " + str(len(i["players"])))
-            print("Map: " + map)
-            print("\n")
+            # print("Room: " + roomname)
+            # print("Player: " + str(len(i["players"])))
+            # print("Map: " + map)
+            # print("\n")
             # winsound.Beep(1000, 500)
 
             # Compare room/map name with keyword
@@ -112,6 +118,7 @@ def refresh_data():
                     map, keyword[index]
                 ):
                     found = True
+                    print(roomname)
                     # print("Found")
                     # playsound('beep-01.mp3')
 
@@ -130,27 +137,41 @@ def refresh_data():
                 # Map name
                 # print(map)
                 result = result + map + "\n\n\n"
+
             # print()
+
+        if target.strip() != "":
+            if i["mod"] == "RA3" and i["gamemode"] == "closedplaying":
+                if i["players"][0]["name"] == target.strip():
+                    target_still_playing = True
+    if target.strip() != "" and not target_still_playing:
+        print(len(target.strip()))
+        print(target_still_playing)
+        playsound("beep.mp3")
 
     if found and appear:
         window.attributes("-topmost", True)
     else:
         window.attributes("-topmost", False)
-    window.configure(bg="red") if found else window.configure(bg="white")
-    lbl_result["text"] = result
+    # window.configure(bg="red") if found else window.configure(bg="red")
+    window.configure(fg_color="red") if found else window.configure(fg_color="white")
+    lbl_result.configure(text=result)
 
 
-btn_sound = tk.Button(window, text="Sound: ON", command=btn_sound_onClick)
+btn_sound = tk.CTkButton(window, text="Sound: ON", command=btn_sound_onClick)
 btn_sound.grid(row=0, column=1)
 btn_sound.grid()
 
-btn_appear = tk.Button(window, text="Appear on top: ON", command=btn_appear_onClick)
+btn_appear = tk.CTkButton(window, text="Appear on top: ON", command=btn_appear_onClick)
 btn_appear.grid(row=0, column=2)
 btn_appear.grid()
 
-lbl_result = tk.Label(window, text="")
+lbl_result = tk.CTkLabel(window, text="")
 lbl_result.grid(row=1, column=1, sticky="NSEW")
-lbl_result.config(font=("Courier", 11))
+lbl_result.configure(font=("Courier", 14), fg_color="white")
+
+tb_wait_player = tk.CTkTextbox(window, height=10)
+tb_wait_player.grid(row=2, column=1, sticky="NSEW")
 
 
 set_interval(refresh_data, 5)
