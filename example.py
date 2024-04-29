@@ -23,7 +23,7 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # create sidebar FRAME with widgets
+        # Left sidebar
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -66,7 +66,7 @@ class App(customtkinter.CTk):
         )
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
-        # create main entry and button FRAME: search
+        # Search bar
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
         self.entry.grid(
             row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew"
@@ -82,11 +82,11 @@ class App(customtkinter.CTk):
             row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew"
         )
 
-        # create textbox
+        # Tab view
+        # Textbox
         self.textbox = customtkinter.CTkTextbox(self, width=250)
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
 
-        # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("CTkTabview")
@@ -119,7 +119,7 @@ class App(customtkinter.CTk):
         )
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
-        # create radiobutton FRAME
+        # RadioButton
         self.radiobutton_frame = customtkinter.CTkFrame(self)
         self.radiobutton_frame.grid(
             row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew"
@@ -144,7 +144,7 @@ class App(customtkinter.CTk):
         )
         self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
 
-        # create slider and progressbar FRAME
+        # Slider
         self.slider_progressbar_frame = customtkinter.CTkFrame(
             self, fg_color="transparent"
         )
@@ -184,7 +184,7 @@ class App(customtkinter.CTk):
             row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns"
         )
 
-        # create scrollable FRAME
+        # Scrollable FRAME
         self.scrollable_frame = customtkinter.CTkScrollableFrame(
             self, label_text="CTkScrollableFrame"
         )
@@ -200,7 +200,7 @@ class App(customtkinter.CTk):
             switch.grid(row=i, column=0, padx=10, pady=(0, 20))
             self.scrollable_frame_switches.append(switch)
 
-        # create checkbox and switch FRAME
+        # Checkbox
         self.checkbox_slider_frame = customtkinter.CTkFrame(self)
         self.checkbox_slider_frame.grid(
             row=1, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew"
