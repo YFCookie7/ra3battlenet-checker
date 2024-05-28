@@ -8,11 +8,15 @@ import webbrowser
 
 
 class App(customtkinter.CTk):
-    server_url = "https://api.ra3battle.cn/api/server/status/detail"
-    data = []
+    
+    friend_list = []
 
     def __init__(self):
         super().__init__()
+        
+        # Instance variable
+        self.server_url = "https://api.ra3battle.cn/api/server/status/detail"
+        self.data = []
 
         # Configure window
         self.geometry("960x680")
@@ -90,12 +94,27 @@ class App(customtkinter.CTk):
         )
 
         # Player frame
-        self.player_frame = customtkinter.CTkFrame(self, corner_radius=10)
+        self.player_frame = customtkinter.CTkScrollableFrame(
+            self, label_text="Friend List", label_font=customtkinter.CTkFont(size=16),  corner_radius=10
+        )
         self.player_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
+        self.player_frame.grid_columnconfigure(0, weight=1)
+        self.checkboxes = []
 
         # Track frame
         self.track_frame = customtkinter.CTkFrame(self, corner_radius=10)
         self.track_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
+        self.track_frame.grid_rowconfigure(0, weight=1)
+        # self.track_frame.grid_columnconfigure(0, weight=1)
+        self.lb_track_frame = customtkinter.CTkLabel(
+            self.track_frame, text="Track", font=customtkinter.CTkFont(size=18)
+        )
+        self.lb_track_frame.grid(row=0, column=0, padx=10, pady=(10, 10), sticky="ew")
+        
+        self.lb_track_status = customtkinter.CTkLabel(
+            self.track_frame, text="PLAYER", font=customtkinter.CTkFont(size=18)
+        )
+        self.lb_track_status.grid(row=1, column=0, padx=10, pady=(10, 10))
 
         # Search frame
         self.search_frame = customtkinter.CTkFrame(
@@ -126,6 +145,7 @@ class App(customtkinter.CTk):
             fg_color="transparent",
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
+            command=self.add_remove_friend,
         )
         self.main_button_2.grid(row=2, column=2, padx=(5, 5), sticky="nsew")
 
@@ -151,33 +171,108 @@ class App(customtkinter.CTk):
         # button.grid(row=0, column=1)
         # button.grid()
 
+        self.init_friend_list()
         self.refresh_data()
+        self.refresh_friend_list()
 
+    # Create friend.txt and store friend record in list
+    def init_friend_list(self):
+        if not os.path.exists("friend.txt"):
+            with open("friend.txt", "w", encoding="utf-8") as file:
+                return
+        with open("friend.txt", "r", encoding="utf-8") as file:
+            self.friend_list = [line.strip() for line in file.readlines()]
+
+    # Fetch and store data
     def refresh_data(self):
-        global data
-        os.system("cls")
-        request = req.Request(App.server_url)
+        # os.system("cls")
+        request = req.Request(self.server_url)
         with req.urlopen(request) as response:
-            data = response.read().decode("utf-8")
-        data = json.loads(data)
+            self.data = response.read().decode("utf-8")
+        self.data = json.loads(self.data)
 
         ra3_player_count = 0
-        for i in data["games"]:
+        for i in self.data["games"]:
             if i["mod"] == "RA3":
                 ra3_player_count += len(i["players"])
         self.player_count_label.configure(
-            text=f"{len(data['players'])}/{ra3_player_count}"
+            text=f"{len(self.data['players'])}/{ra3_player_count}"
         )
         self.after(5000, self.refresh_data)
 
+    # Update friend list gui
+    def refresh_friend_list(self):
+        if self.checkboxes:
+            checkbox_to_remove = self.checkboxes.pop()
+            checkbox_to_remove.destroy()
+
+        found_list = []
+        not_found_list = []
+
+        for friend in self.friend_list:
+            found = False
+            for player in self.data["players"]:
+                if player["name"] == friend.strip():
+                    found = True
+                    break
+
+            if found:
+                found_list.append(friend.strip())
+            else:
+                not_found_list.append(friend.strip())
+
+        i = 0
+        for found in found_list:
+            new_checkbox = customtkinter.CTkCheckBox(
+                master=self.player_frame,
+                text=friend.strip(),
+                state="disabled",
+                text_color_disabled="green",
+            )
+            new_checkbox.grid(row=len(self.checkboxes), column=0, padx=10, pady=(0, 20))
+            new_checkbox.select()
+
+            self.checkboxes.append(new_checkbox)
+
+        print(found_list)
+        print(not_found_list)
+
+        self.after(5000, self.refresh_friend_list)
+
+    # Add or remove friend
+    def add_remove_friend(self):
+        found = False
+        playerName = self.entry.get()
+        print(self.friend_list)
+        if playerName not in self.friend_list:
+            for player in self.data["players"]:
+                if player["name"] == playerName:
+                    found = True
+                    with open("friend.txt", "a") as file:
+                        file.write(playerName + "\n")
+                    break
+            if not found:
+                self.entry.delete(0, "end")
+        else:
+            self.friend_list.remove(playerName)
+            with open("friend.txt", "w") as file:
+                for friend in self.friend_list:
+                    file.write(friend + "\n")
+        self.init_friend_list()     # Refresh friend list
+        
+
+    # Open player profile in browser 
     def redirect_to_profile(self):
-        global data
-        for player in data["players"]:
-            print(player["name"])
-            if player["name"] == self.entry.get():
+        found = False
+        target_player = self.entry.get()
+        for player in self.data["players"]:
+            if player["name"] == target_player:
+                found = True
                 url = f"https://ra3battle.net/persona/{player['id']}"
                 webbrowser.open(url)
                 break
+        if not found:
+            self.entry.delete(0, "end")
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -187,5 +282,7 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
 
-app = App()
-app.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+
