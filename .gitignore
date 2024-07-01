@@ -1,3 +1,6 @@
 .vscode
 friend.txt
 __pycache__
+.idea
+*.zip
+map_dict.json
