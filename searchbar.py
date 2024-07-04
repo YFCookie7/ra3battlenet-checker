@@ -12,8 +12,8 @@ class SearchBar(ctk.CTkFrame):
 
     def __init__(self, parent):
         super().__init__(parent, corner_radius=10, height=50, fg_color="transparent")
-        self.parent = parent
         self.tracker = Tracker(parent)
+        self.parent = parent
         self.download_window = None
         self.local_map_path = r"C:\Users\mikel\AppData\Roaming\Red Alert 3\Maps"
 
@@ -28,7 +28,7 @@ class SearchBar(ctk.CTkFrame):
             width=120,
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            command=self.toogle_tracking,
+            command=lambda: self.tracker.track_player(self.search_entry.get()),
         )
         self.btn_track.grid(row=0, column=1, padx=(10, 5), sticky="nsew")
 
@@ -105,9 +105,6 @@ class SearchBar(ctk.CTkFrame):
             self.download_window.update_content(pending_dict)
 
         self.download_window.deiconify()
-
-    def toogle_tracking(self):
-        self.tracker.toogle_tracking()
 
 
 class DLWindow(ctk.CTkToplevel):

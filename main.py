@@ -1,3 +1,4 @@
+import os
 import customtkinter as ctk
 import json
 import urllib.request as req
@@ -9,10 +10,12 @@ from searchbar import SearchBar
 
 
 class App(ctk.CTk):
+
+    data = []
+
     def __init__(self):
         super().__init__()
         self.server_url = "https://api.ra3battle.cn/api/server/status/detail"
-        self.data = []
 
         # Configure window
         self.title("RA3 BattleNet")
@@ -52,18 +55,64 @@ class App(ctk.CTk):
         # os.system("cls")
         request = req.Request(self.server_url)
         with req.urlopen(request) as response:
-            self.data = response.read().decode("utf-8")
-        self.data = json.loads(self.data)
+            App.data = response.read().decode("utf-8")
+        App.data = json.loads(App.data)
 
+        # Overall player count
         ra3_player_count = 0
-        for i in self.data["games"]:
+        for i in App.data["games"]:
             if i["mod"] == "RA3":
                 ra3_player_count += len(i["players"])
         self.sidebar_frame.lb_player_count.configure(
-            text=f"{len(self.data['players'])}/{ra3_player_count}"
+            text=f"{len(App.data['players'])}/{ra3_player_count}"
         )
 
-        # process: player count, track player, friend list, rooms
+        # Track player
+        if Tracker.track_target:
+            isOnline = False
+            for player in App.data["players"]:
+                if player["name"] == Tracker.track_target:
+                    isOnline = True
+                    break
+            if isOnline:
+                isPlaying = False
+                for room in App.data["games"]:
+                    for player in room["players"]:
+                        if player["name"] == Tracker.track_target:
+                            if room["gamemode"] == "closedplaying":
+                                self.tracker.lb_status.configure(
+                                    text=f"{Tracker.track_target}: In game",
+                                    text_color="blue",
+                                )
+                            else:
+                                self.tracker.lb_status.configure(
+                                    text=f"{Tracker.track_target}: Waiting to start",
+                                    text_color="yellow",
+                                )
+
+                            content = " ".join(room["hostname"].split()[1:]) + "\n\n"
+                            for player in room["players"]:
+                                content += player["name"] + "\n"
+                            content += "\n"
+                            content += os.path.basename(
+                                os.path.normpath(room["mapname"])
+                            )
+                            self.tracker.lb_content.configure(text=content)
+                            isPlaying = True
+                            break
+                if not isPlaying:
+                    self.tracker.lb_status.configure(
+                        text=f"{Tracker.track_target}: Idle", text_color="green"
+                    )
+                    self.tracker.lb_content.configure(text="")
+            else:
+                self.tracker.lb_status.configure(
+                    text=f"{self.track_target}: Offline", text_color="red"
+                )
+                self.tracker.lb_content.configure(text=content)
+        else:
+            self.tracker.lb_status.configure(text="No target")
+
         self.after(5000, self.fetch_data)
 
 
