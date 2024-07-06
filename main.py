@@ -3,7 +3,7 @@ import customtkinter as ctk
 import json
 import urllib.request as req
 from sidebar import SideBar
-from gameroom import GameRoom
+from tabview import TabView
 from friendlist import FriendList
 from tracker import Tracker
 from searchbar import SearchBar
@@ -32,7 +32,7 @@ class App(ctk.CTk):
         self.sidebar_frame.grid(row=0, column=0, rowspan=3, sticky="ns")
         self.grid_rowconfigure(0, weight=1)
 
-        self.tabview = GameRoom(self)
+        self.tabview = TabView(self)
         self.tabview.grid(row=0, column=1, rowspan=2, sticky="nsew", padx=10, pady=10)
         self.grid_columnconfigure(1, weight=1)
 
@@ -112,6 +112,9 @@ class App(ctk.CTk):
                 self.tracker.lb_content.configure(text=content)
         else:
             self.tracker.lb_status.configure(text="No target")
+
+        # Update game room
+        self.tabview.update_room()
 
         self.after(5000, self.fetch_data)
 
