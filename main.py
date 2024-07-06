@@ -107,9 +107,9 @@ class App(ctk.CTk):
                     self.tracker.lb_content.configure(text="")
             else:
                 self.tracker.lb_status.configure(
-                    text=f"{self.track_target}: Offline", text_color="red"
+                    text=f"{Tracker.track_target}: Offline", text_color="red"
                 )
-                self.tracker.lb_content.configure(text=content)
+                self.tracker.lb_content.configure(text="")
         else:
             self.tracker.lb_status.configure(text="No target")
 
