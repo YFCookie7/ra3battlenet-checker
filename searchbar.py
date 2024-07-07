@@ -3,6 +3,7 @@ import webbrowser
 import zipfile
 import customtkinter as ctk
 import os
+from friendlist import FriendList
 from tracker import Tracker
 import requests
 import json
@@ -213,6 +214,7 @@ class FriendWindow(ctk.CTkToplevel):
             except FileNotFoundError:
                 with open("./friendlist.txt", "w", encoding="utf-8") as file:
                     pass
+        FriendList.refresh_friend_list(self)
         self.destroy()
 
     def remove_friend(self):

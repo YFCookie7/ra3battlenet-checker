@@ -29,6 +29,8 @@ class TabView(ctk.CTkTabview):
             "tf",
             "pve",
             "电脑",
+            "空战",
+            "美国小镇",
         ]
 
     def update_room(self):
@@ -100,7 +102,7 @@ class GameRoom(ctk.CTkFrame):
 
         # Room label
         self.lb_room = ctk.CTkLabel(
-            self, text=room_name, font=("Arial", 18), width=150, anchor="w"
+            self, text=room_name, font=("Arial", 18), width=130, anchor="w"
         )
         self.lb_room.grid(row=0, column=0, padx=15, pady=2, sticky="w")
 

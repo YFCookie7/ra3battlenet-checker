@@ -19,7 +19,7 @@ class App(ctk.CTk):
         # Configure window
         self.title("RA3 BattleNet")
         self.iconbitmap("favicon.ico")
-        self.geometry("960x680")
+        self.geometry("1000x700")
         self.attributes("-topmost", False)
         ctk.set_appearance_mode("System")  # Mode: "System" (standard), "Dark", "Light"
         ctk.set_default_color_theme(
@@ -59,6 +59,9 @@ class App(ctk.CTk):
 
         # Update player count
         self.sidebar_frame.update_player_count()
+
+        # Update friend list
+        self.friend.update_friend_list()
 
         # Update tracking target status
         self.tracker.update_status()
