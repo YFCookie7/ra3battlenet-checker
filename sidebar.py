@@ -4,6 +4,7 @@ import customtkinter as ctk
 class SideBar(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent, width=190, corner_radius=0)
+        self.parent = parent
         self.grid_rowconfigure(1, weight=1)
 
         self.lb_logo = ctk.CTkLabel(
@@ -47,3 +48,12 @@ class SideBar(ctk.CTkFrame):
         )
         self.menu_scaling.set("100%")
         self.menu_scaling.grid(row=5, column=0, padx=20, pady=(5, 20), sticky="s")
+
+    def update_player_count(self):
+        ra3_player_count = 0
+        for i in self.parent.data["games"]:
+            if i["mod"] == "RA3":
+                ra3_player_count += len(i["players"])
+        self.lb_player_count.configure(
+            text=f"{len(self.parent.data['players'])}/{ra3_player_count}"
+        )

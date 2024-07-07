@@ -1,3 +1,4 @@
+import os
 import customtkinter as ctk
 
 
@@ -33,6 +34,53 @@ class Tracker(ctk.CTkScrollableFrame):
                 self.tracker_window.update_content(player_name)
 
             self.tracker_window.deiconify()
+
+    def update_status(self):
+        # Track player
+        if Tracker.track_target:
+            isOnline = False
+            for player in self.parent.data["players"]:
+                if player["name"] == Tracker.track_target:
+                    isOnline = True
+                    break
+            if isOnline:
+                isPlaying = False
+                for room in self.parent.data["games"]:
+                    for player in room["players"]:
+                        if player["name"] == Tracker.track_target:
+                            if room["gamemode"] == "closedplaying":
+                                self.lb_status.configure(
+                                    text=f"{Tracker.track_target}: In game",
+                                    text_color="blue",
+                                )
+                            else:
+                                self.lb_status.configure(
+                                    text=f"{Tracker.track_target}: Waiting to start",
+                                    text_color="yellow",
+                                )
+
+                            content = " ".join(room["hostname"].split()[1:]) + "\n\n"
+                            for player in room["players"]:
+                                content += player["name"] + "\n"
+                            content += "\n"
+                            content += os.path.basename(
+                                os.path.normpath(room["mapname"])
+                            )
+                            self.lb_content.configure(text=content)
+                            isPlaying = True
+                            break
+                if not isPlaying:
+                    self.lb_status.configure(
+                        text=f"{Tracker.track_target}: Idle", text_color="green"
+                    )
+                    self.lb_content.configure(text="")
+            else:
+                self.lb_status.configure(
+                    text=f"{Tracker.track_target}: Offline", text_color="red"
+                )
+                self.lb_content.configure(text="")
+        else:
+            self.lb_status.configure(text="No target")
 
 
 class TrackerWindow(ctk.CTkToplevel):

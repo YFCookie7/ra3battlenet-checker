@@ -54,6 +54,10 @@ class TabView(ctk.CTkTabview):
 
                 room_name = ("".join(room["hostname"].split()[1:])).strip()
                 map_name = os.path.basename(os.path.normpath(room["mapname"]))
+
+                if map_name.startswith("camp_"):
+                    continue
+
                 tafang = False
                 for keyword in self.tafang_keyword:
                     if keyword.lower() in room_name.lower() or (
@@ -61,10 +65,6 @@ class TabView(ctk.CTkTabview):
                     ):
                         tafang = True
                         break
-
-                if map_name.startswith("camp_"):
-                    map_name = "Campaign_" + map_name[5:8]
-                    room_name = room["decodedHostName"]
 
                 if room["gamemode"] == "openstaging":
                     game_room = GameRoom(

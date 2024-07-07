@@ -61,7 +61,7 @@ class SearchBar(ctk.CTkFrame):
             width=120,
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            # command=lambda: webbrowser.open(self.map_url + self.search_entry.get()),
+            command=lambda: FriendWindow(self, self.search_entry.get()),
         )
         self.btn_add.grid(row=0, column=4, padx=(5, 5), sticky="nsew")
 
@@ -167,3 +167,58 @@ class DLWindow(ctk.CTkToplevel):
 
     def start_download(self):
         threading.Thread(target=self.download_map).start()
+
+
+class FriendWindow(ctk.CTkToplevel):
+    def __init__(self, parent, keyword, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.geometry("400x300")
+        self.parent = parent
+        self.friend_list = []
+
+        try:
+            with open("./friendlist.txt", "r", encoding="utf-8") as file:
+                self.friend_list = [line.strip() for line in file.readlines()]
+        except FileNotFoundError:
+            with open("./friendlist.txt", "w", encoding="utf-8") as file:
+                pass
+
+        matching_name = []
+        for player in self.parent.parent.data["players"]:
+            if keyword in player["name"]:
+                matching_name.append(player["name"])
+
+        self.combobox = ctk.CTkOptionMenu(self, values=matching_name, width=200)
+        self.combobox.grid(row=0, column=0, columnspan=2, padx=(0, 0))
+
+        self.btn_add = ctk.CTkButton(
+            self, text="Add", command=self.add_friend, width=50
+        )
+        self.btn_add.grid(row=1, column=0, padx=10)
+
+        self.btn_remove = ctk.CTkButton(
+            self, text="Remove", command=self.remove_friend, width=50
+        )
+        self.btn_remove.grid(row=1, column=1, padx=10)
+
+        self.columnconfigure((0, 1), weight=1)
+        self.rowconfigure(0, weight=3)
+        self.rowconfigure(1, weight=1)
+
+    def add_friend(self):
+        if self.combobox.get() not in self.friend_list:
+            try:
+                with open("./friendlist.txt", "a", encoding="utf-8") as file:
+                    file.write(self.combobox.get() + "\n")
+            except FileNotFoundError:
+                with open("./friendlist.txt", "w", encoding="utf-8") as file:
+                    pass
+        self.destroy()
+
+    def remove_friend(self):
+        if self.combobox.get() in self.friend_list:
+            self.friend_list.remove(self.combobox.get())
+            with open("./friendlist.txt", "w", encoding="utf-8") as file:
+                for friend in self.friend_list:
+                    file.write(friend + "\n")
+        self.destroy()

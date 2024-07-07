@@ -1,4 +1,3 @@
-import os
 import customtkinter as ctk
 import json
 import urllib.request as req
@@ -52,66 +51,17 @@ class App(ctk.CTk):
         self.fetch_data()
 
     def fetch_data(self):
-        # os.system("cls")
+        # Fetch data
         request = req.Request(self.server_url)
         with req.urlopen(request) as response:
             App.data = response.read().decode("utf-8")
         App.data = json.loads(App.data)
 
-        # Overall player count
-        ra3_player_count = 0
-        for i in App.data["games"]:
-            if i["mod"] == "RA3":
-                ra3_player_count += len(i["players"])
-        self.sidebar_frame.lb_player_count.configure(
-            text=f"{len(App.data['players'])}/{ra3_player_count}"
-        )
+        # Update player count
+        self.sidebar_frame.update_player_count()
 
-        # Track player
-        if Tracker.track_target:
-            isOnline = False
-            for player in App.data["players"]:
-                if player["name"] == Tracker.track_target:
-                    isOnline = True
-                    break
-            if isOnline:
-                isPlaying = False
-                for room in App.data["games"]:
-                    for player in room["players"]:
-                        if player["name"] == Tracker.track_target:
-                            if room["gamemode"] == "closedplaying":
-                                self.tracker.lb_status.configure(
-                                    text=f"{Tracker.track_target}: In game",
-                                    text_color="blue",
-                                )
-                            else:
-                                self.tracker.lb_status.configure(
-                                    text=f"{Tracker.track_target}: Waiting to start",
-                                    text_color="yellow",
-                                )
-
-                            content = " ".join(room["hostname"].split()[1:]) + "\n\n"
-                            for player in room["players"]:
-                                content += player["name"] + "\n"
-                            content += "\n"
-                            content += os.path.basename(
-                                os.path.normpath(room["mapname"])
-                            )
-                            self.tracker.lb_content.configure(text=content)
-                            isPlaying = True
-                            break
-                if not isPlaying:
-                    self.tracker.lb_status.configure(
-                        text=f"{Tracker.track_target}: Idle", text_color="green"
-                    )
-                    self.tracker.lb_content.configure(text="")
-            else:
-                self.tracker.lb_status.configure(
-                    text=f"{Tracker.track_target}: Offline", text_color="red"
-                )
-                self.tracker.lb_content.configure(text="")
-        else:
-            self.tracker.lb_status.configure(text="No target")
+        # Update tracking target status
+        self.tracker.update_status()
 
         # Update game room
         self.tabview.update_room()
