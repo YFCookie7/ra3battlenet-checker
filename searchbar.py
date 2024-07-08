@@ -136,7 +136,7 @@ class DLWindow(ctk.CTkToplevel):
         self.update_content(pending_dict)
 
     def download_map(self):
-        filename = self.combobox.get() + ".zip"
+        filename = self.combobox.get()
         self.label.configure(text=f"Downloading {filename}...")
         url = self.pending_dict.get(self.combobox.get(), None)
 
