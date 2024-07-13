@@ -223,4 +223,5 @@ class FriendWindow(ctk.CTkToplevel):
             with open("./friendlist.txt", "w", encoding="utf-8") as file:
                 for friend in self.friend_list:
                     file.write(friend + "\n")
+        FriendList.refresh_friend_list(self)
         self.destroy()
