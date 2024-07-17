@@ -85,11 +85,22 @@ class Tracker(ctk.CTkScrollableFrame):
 
 class TrackerWindow(ctk.CTkToplevel):
     def __init__(self, parent, player_name, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(
+            parent,
+            *args,
+            **kwargs,
+        )
         self.parent = parent
         self.geometry("400x300")
+        self.title("Track Player")
 
-        self.combobox = ctk.CTkOptionMenu(self, values=list({}), width=300)
+        players = self.parent.parent.data["players"]
+        matching_names = []
+        for player in players:
+            if player_name in player["name"]:
+                matching_names.append(player["name"])
+
+        self.combobox = ctk.CTkOptionMenu(self, values=matching_names, width=300)
         self.combobox.grid(row=0, column=0, padx=(0, 0))
 
         self.rowconfigure((0, 1), weight=1)
@@ -112,4 +123,5 @@ class TrackerWindow(ctk.CTkToplevel):
 
     def track_player(self):
         Tracker.track_target = self.combobox.get()
+        self.parent.parent.fetch_data()
         self.destroy()

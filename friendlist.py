@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from tracker import Tracker
 
 
 class FriendList(ctk.CTkScrollableFrame):
@@ -11,6 +12,7 @@ class FriendList(ctk.CTkScrollableFrame):
             label_font=ctk.CTkFont(size=16),
             corner_radius=10,
         )
+        self.tracker = Tracker(parent)
         self.parent = parent
         self.friend_radio = []
         self.prev_data = None
@@ -19,9 +21,6 @@ class FriendList(ctk.CTkScrollableFrame):
         self.refresh_friend_list()
 
         self.columnconfigure(0, weight=1)
-
-        self.testRadio = FriendRadio(self, "qwe", "offline")
-        self.testRadio.grid(row=0, column=0, padx=10, pady=10)
 
         self.update_friend_list()
 
@@ -69,22 +68,22 @@ class FriendList(ctk.CTkScrollableFrame):
 
         i = 0
         for friend in idle_friend:
-            radio = FriendRadio(self, friend, "idle")
+            radio = FriendRadio(self, friend, "idle", self.tracker)
             radio.grid(row=i, column=0, padx=5, pady=5)
             self.friend_radio.append(radio)
             i += 1
         for friend in staging_friend:
-            radio = FriendRadio(self, friend, "staging")
+            radio = FriendRadio(self, friend, "staging", self.tracker)
             radio.grid(row=i, column=0, padx=5, pady=5)
             self.friend_radio.append(radio)
             i += 1
         for friend in in_game_friend:
-            radio = FriendRadio(self, friend, "in-game")
+            radio = FriendRadio(self, friend, "in-game", self.tracker)
             radio.grid(row=i, column=0, padx=5, pady=5)
             self.friend_radio.append(radio)
             i += 1
         for friend in offline_friend:
-            radio = FriendRadio(self, friend, "offline")
+            radio = FriendRadio(self, friend, "offline", self.tracker)
             radio.grid(row=i, column=0, padx=5, pady=5)
             self.friend_radio.append(radio)
             i += 1
@@ -100,10 +99,15 @@ class FriendList(ctk.CTkScrollableFrame):
 
 class FriendRadio(ctk.CTkRadioButton):
 
-    def __init__(self, parent, friend_name, friend_status):
+    def __init__(self, parent, friend_name, friend_status, tracker):
         super().__init__(
-            parent, text=friend_name, value="true", font=ctk.CTkFont(size=14)
+            parent,
+            text=friend_name,
+            value="true",
+            font=ctk.CTkFont(size=14),
+            command=lambda: tracker.track_player(friend_name),
         )
+        self.tracker = tracker
         self.configure(border_width_unchecked=5)
         if friend_status == "idle":
             self.configure(border_color="#1eb300")

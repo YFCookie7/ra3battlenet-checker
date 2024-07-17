@@ -174,6 +174,7 @@ class FriendWindow(ctk.CTkToplevel):
     def __init__(self, parent, keyword, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.geometry("400x300")
+        self.title("Add/Remove friend")
         self.parent = parent
         self.friend_list = []
 
@@ -208,6 +209,7 @@ class FriendWindow(ctk.CTkToplevel):
 
     def add_friend(self):
         if self.combobox.get() not in self.friend_list:
+            self.friend_list.append(self.combobox.get())
             try:
                 with open("./friendlist.txt", "a", encoding="utf-8") as file:
                     file.write(self.combobox.get() + "\n")
