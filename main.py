@@ -6,6 +6,7 @@ from tabview import TabView
 from friendlist import FriendList
 from tracker import Tracker
 from searchbar import SearchBar
+from PIL import Image, ImageTk
 
 
 class App(ctk.CTk):
@@ -26,26 +27,36 @@ class App(ctk.CTk):
             "blue"
         )  # Theme: "blue" (standard), "green", "dark-blue"
 
+        # Background image
+        background_image = Image.open("background.png")
+        photo = ImageTk.PhotoImage(background_image)
+        canvas = ctk.CTkCanvas(self, highlightthickness=0)
+        canvas.grid(row=0, column=0, rowspan=4, columnspan=3, sticky="nsew")
+        canvas.create_image(0, 0, anchor="nw", image=photo)
+        canvas.image = photo
+
         # Layout
         self.sidebar_frame = SideBar(self)
         self.sidebar_frame.grid(row=0, column=0, rowspan=3, sticky="ns")
         self.grid_rowconfigure(0, weight=1)
 
         self.tabview = TabView(self)
-        self.tabview.grid(row=0, column=1, rowspan=2, sticky="nsew", padx=10, pady=10)
+        self.tabview.grid(
+            row=0, column=1, rowspan=2, sticky="nsew", padx=(15, 10), pady=(15, 5)
+        )
         self.grid_columnconfigure(1, weight=1)
 
         self.friend = FriendList(self)
-        self.friend.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
+        self.friend.grid(row=0, column=2, sticky="nsew", padx=(5, 15), pady=(15, 7))
         self.grid_rowconfigure(0, weight=1)
 
         self.tracker = Tracker(self)
-        self.tracker.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
+        self.tracker.grid(row=1, column=2, sticky="nsew", padx=(5, 15), pady=(8, 5))
         self.grid_rowconfigure(1, weight=1)
 
         self.searchbar = SearchBar(self)
         self.searchbar.grid(
-            row=2, column=1, columnspan=2, sticky="nsew", padx=10, pady=10
+            row=2, column=1, columnspan=2, sticky="nsew", padx=15, pady=(5, 10)
         )
 
         self.fetch_data()

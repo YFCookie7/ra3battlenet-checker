@@ -11,6 +11,7 @@ class FriendList(ctk.CTkScrollableFrame):
             label_text="Friend List",
             label_font=ctk.CTkFont(size=16),
             corner_radius=10,
+            fg_color="transparent",
         )
         self.tracker = Tracker(parent)
         self.parent = parent

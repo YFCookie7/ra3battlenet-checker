@@ -3,12 +3,15 @@ import customtkinter as ctk
 
 class SideBar(ctk.CTkFrame):
     def __init__(self, parent):
-        super().__init__(parent, width=190, corner_radius=0)
+        super().__init__(parent, width=190, corner_radius=0, fg_color="#CA2B2F")
         self.parent = parent
         self.grid_rowconfigure(1, weight=1)
 
         self.lb_logo = ctk.CTkLabel(
-            self, text="RA3 BattleNet", font=ctk.CTkFont(size=20, weight="bold")
+            self,
+            text="RA3 BattleNet",
+            font=ctk.CTkFont(size=20, weight="bold"),
+            text_color="white",
         )
         self.lb_logo.grid(row=0, column=0, padx=20, pady=(40, 10), sticky="n")
 
@@ -16,12 +19,14 @@ class SideBar(ctk.CTkFrame):
             self,
             text="##/##",
             font=ctk.CTkFont(size=18),
+            text_color="white",
         )
         self.lb_player_count.grid(row=1, column=0, padx=20, pady=(40, 10), sticky="n")
 
         self.lb_theme = ctk.CTkLabel(
             self,
             text="Theme:",
+            text_color="white",
         )
         self.lb_theme.grid(row=2, column=0, padx=20, pady=(10, 0), sticky="s")
 
@@ -36,6 +41,7 @@ class SideBar(ctk.CTkFrame):
         self.lb_scaling = ctk.CTkLabel(
             self,
             text="UI Scaling:",
+            text_color="white",
         )
         self.lb_scaling.grid(row=4, column=0, padx=20, pady=(20, 0), sticky="s")
 
