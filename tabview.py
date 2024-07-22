@@ -20,7 +20,8 @@ class TabView(ctk.CTkTabview):
         self.tab("In-Game").grid_rowconfigure(0, weight=1)
         self.tab("In-Game").grid_columnconfigure(0, weight=1)
 
-        self.game_rooms = []
+        self.openstaging_rooms = []
+        self.closedplaying_rooms = []
         self.prev_data = None
 
         self.tafang_keyword = [
@@ -41,12 +42,12 @@ class TabView(ctk.CTkTabview):
             return
         self.prev_data = curr_data
 
-        for room in self.game_rooms:
+        for room in self.openstaging_rooms:
             room.destroy()
-        self.game_rooms = []
-
-        i = 0
-        j = 0
+        for room in self.closedplaying_rooms:
+            room.destroy()
+        self.openstaging_rooms = []
+        self.closedplaying_rooms = []
 
         for room in self.parent.data["games"]:
             if room["mod"] == "RA3":
@@ -76,9 +77,7 @@ class TabView(ctk.CTkTabview):
                         player_names,
                         tafang,
                     )
-                    game_room.grid(row=i, column=0, sticky="nsew", padx=(5), pady=5)
-                    self.game_rooms.append(game_room)
-                    i += 1
+                    self.openstaging_rooms.append(game_room)
                 elif room["gamemode"] == "closedplaying":
                     game_room = GameRoom(
                         self.ingame_frame,
@@ -87,14 +86,23 @@ class TabView(ctk.CTkTabview):
                         player_names,
                         tafang,
                     )
-                    game_room.grid(row=j, column=0, sticky="nsew", padx=(5), pady=5)
-                    self.game_rooms.append(game_room)
-                    j += 1
+                    self.closedplaying_rooms.append(game_room)
+        sorted_openstaging_rooms = sorted(
+            self.openstaging_rooms, key=lambda gr: not gr.tafang
+        )
+        sorted_closedplaying_rooms = sorted(
+            self.closedplaying_rooms, key=lambda gr: not gr.tafang
+        )
+        for i, room in enumerate(sorted_openstaging_rooms):
+            room.grid(row=i, column=0, sticky="nsew", padx=(5), pady=5)
+        for i, room in enumerate(sorted_closedplaying_rooms):
+            room.grid(row=i, column=0, sticky="nsew", padx=(5), pady=5)
 
 
 class GameRoom(ctk.CTkFrame):
     def __init__(self, parent, room_name, map_name, player_names, tafang):
         super().__init__(parent, fg_color="white")
+        self.tafang = tafang
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
