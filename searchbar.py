@@ -45,7 +45,7 @@ class SearchBar(ctk.CTkFrame):
             width=120,
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            command=self.redirect_to_profile,
+            command=lambda: ProfileWindow(self, self.search_entry.get()),
         )
         self.btn_profile.grid(row=0, column=2, padx=(5, 5), sticky="nsew")
 
@@ -71,18 +71,6 @@ class SearchBar(ctk.CTkFrame):
         )
         self.btn_add.grid(row=0, column=4, padx=(5, 5), sticky="nsew")
 
-    def redirect_to_profile(self):
-        found = False
-        target_player = self.search_entry.get()
-        for player in self.parent.data["players"]:
-            if player["name"] == target_player:
-                found = True
-                url = f"https://ra3battle.net/persona/{player['id']}"
-                webbrowser.open(url)
-                break
-        if not found:
-            self.search_entry.delete(0, "end")
-
     def download_map(self, target_map):
         # Return if the search entry is empty
         if not target_map:
@@ -101,20 +89,6 @@ class SearchBar(ctk.CTkFrame):
                 self.download_window.update_content(map_query_result)
 
             self.download_window.deiconify()
-
-        # # Fetch available map links
-        # with open("./map_downloader/map_dict.json", "r", encoding="utf-8") as f:
-        #     map_dict = json.load(f)
-
-        # for map_name, map_url in map_dict.items():
-        #     if target_map in map_name:
-        #         pending_dict[map_name] = map_url
-
-        # # Filter already downloaded maps
-        # for map_name in list(pending_dict.keys()):
-        #     map_path = os.path.join(self.local_map_path, map_name)
-        #     if os.path.isdir(map_path):
-        #         del pending_dict[map_name]
 
 
 class DLWindow(ctk.CTkToplevel):
@@ -245,3 +219,42 @@ class FriendWindow(ctk.CTkToplevel):
                     file.write(friend + "\n")
         FriendList.refresh_friend_list(self)
         self.destroy()
+
+
+class ProfileWindow(ctk.CTkToplevel):
+    def __init__(self, parent, query_name, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.geometry("400x300")
+        self.query_name = query_name
+        self.player_list = parent.parent.data["players"]
+        self.pending_dict = {}
+
+        self.combobox = ctk.CTkOptionMenu(
+            self, values=list(self.pending_dict.keys()), width=300
+        )
+        self.combobox.grid(row=0, column=0, padx=(0, 0))
+
+        self.rowconfigure((0, 1, 2), weight=1)
+        self.columnconfigure((0), weight=1)
+
+        self.button = ctk.CTkButton(
+            self, text="Open profile", command=self.redirect_to_profile, width=120
+        )
+        self.button.grid(row=1, column=0, padx=(0, 0))
+
+        self.label = ctk.CTkLabel(self, text="")
+        self.label.grid(row=2, column=0, padx=(0, 0))
+
+        self.update_content()
+
+    def update_content(self):
+        for player in self.player_list:
+            if self.query_name.lower() in player["name"].lower():
+                self.pending_dict[player["name"]] = player["id"]
+        self.combobox.configure(values=list(self.pending_dict.keys()))
+
+    def redirect_to_profile(self):
+        player_id = self.pending_dict.get(self.combobox.get(), None)
+        if player_id:
+            url = f"https://ra3battle.net/persona/{player_id}"
+            webbrowser.open(url)
