@@ -1,3 +1,5 @@
 @echo off
 
-start "" "c:\Users\mikel\AppData\Local\Programs\Python\Python310\pythonw.exe" "./main.py"
+python -m pip install -r requirements.txt
+
+start "" "pythonw" "./main.py"
