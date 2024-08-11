@@ -1,3 +1,4 @@
+import http
 import customtkinter as ctk
 import json
 import urllib.request as req
@@ -62,25 +63,33 @@ class App(ctk.CTk):
         self.fetch_data()
 
     def fetch_data(self):
-        # Fetch data
-        request = req.Request(self.server_url)
-        with req.urlopen(request) as response:
-            App.data = response.read().decode("utf-8")
-        App.data = json.loads(App.data)
+        try:
+            # Fetch data
+            request = req.Request(self.server_url)
+            with req.urlopen(request) as response:
+                data = response.read().decode("utf-8")
+            App.data = json.loads(data)
 
-        # Update player count
-        self.sidebar_frame.update_player_count()
+            # Update player count
+            self.sidebar_frame.update_player_count()
 
-        # Update friend list
-        self.friend.update_friend_list()
+            # Update friend list
+            self.friend.update_friend_list()
 
-        # Update tracking target status
-        self.tracker.update_status()
+            # Update tracking target status
+            self.tracker.update_status()
 
-        # Update game room
-        self.tabview.update_room()
+            # Update game room
+            self.tabview.update_room()
 
-        self.after(5000, self.fetch_data)
+        except http.client.IncompleteRead as e:
+            print("Incomplete read occurred:", e)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        finally:
+            self.after(5000, self.fetch_data)
 
 
 if __name__ == "__main__":

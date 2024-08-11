@@ -70,22 +70,22 @@ class FriendList(ctk.CTkScrollableFrame):
         i = 0
         for friend in idle_friend:
             radio = FriendRadio(self, friend, "idle", self.tracker)
-            radio.grid(row=i, column=0, padx=5, pady=5)
+            radio.grid(row=i, column=0, padx=(45, 5), pady=5, sticky="w")
             self.friend_radio.append(radio)
             i += 1
         for friend in staging_friend:
             radio = FriendRadio(self, friend, "staging", self.tracker)
-            radio.grid(row=i, column=0, padx=5, pady=5)
+            radio.grid(row=i, column=0, padx=(45, 5), pady=5, sticky="w")
             self.friend_radio.append(radio)
             i += 1
         for friend in in_game_friend:
             radio = FriendRadio(self, friend, "in-game", self.tracker)
-            radio.grid(row=i, column=0, padx=5, pady=5)
+            radio.grid(row=i, column=0, padx=(45, 5), pady=5, sticky="w")
             self.friend_radio.append(radio)
             i += 1
         for friend in offline_friend:
             radio = FriendRadio(self, friend, "offline", self.tracker)
-            radio.grid(row=i, column=0, padx=5, pady=5)
+            radio.grid(row=i, column=0, padx=(45, 5), pady=5, sticky="w")
             self.friend_radio.append(radio)
             i += 1
 
