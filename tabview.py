@@ -33,6 +33,7 @@ class TabView(ctk.CTkTabview):
             "空战",
             "美国小镇",
             "sargon",
+            "乱虫",
         ]
 
     def update_room(self):

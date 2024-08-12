@@ -104,7 +104,7 @@ class DLWindow(ctk.CTkToplevel):
         self.combobox = ctk.CTkOptionMenu(
             self, values=list(self.pending_dict.keys()), width=300
         )
-        self.combobox.grid(row=0, column=0, padx=(0, 0))
+        self.combobox.grid(row=0, column=0, columnspan=2, padx=(0, 0))
 
         self.rowconfigure((0, 1, 2), weight=1)
         self.columnconfigure((0), weight=1)
@@ -114,8 +114,19 @@ class DLWindow(ctk.CTkToplevel):
         )
         self.button.grid(row=1, column=0, padx=(0, 0))
 
+        self.button2 = ctk.CTkButton(
+            self,
+            text="Browse",
+            command=lambda: self.browse_map(self.combobox.get()),
+            width=120,
+        )
+        self.button2.grid(row=1, column=1, padx=(0, 0))
+
         self.label = ctk.CTkLabel(self, text="")
         self.label.grid(row=2, column=0, padx=(0, 0))
+        self.columnconfigure((0, 1), weight=1)
+        self.rowconfigure(0, weight=3)
+        self.rowconfigure(1, weight=1)
 
         self.update_content(map_query_result)
 
@@ -150,6 +161,17 @@ class DLWindow(ctk.CTkToplevel):
 
         else:
             self.label.configure(text=f"Failed to find {filename} link")
+
+    def browse_map(self, map_name):
+        url = "https://ra3.z31.xyz/v1/maps/?ordering=-id&s=20&search="
+        response = requests.get(url + map_name)
+
+        if response.status_code == 200:
+            map_query_result = response.json()
+            for result in map_query_result["results"]:
+                if result["name"] == map_name or result["chinese_name"] == map_name:
+                    webbrowser.open("https://ra3.z31.xyz/" + str(result["id"]))
+                    return
 
     def update_content(self, map_query_result):
         self.map_query_result = map_query_result
