@@ -34,6 +34,7 @@ class TabView(ctk.CTkTabview):
             "美国小镇",
             "sargon",
             "乱虫",
+            "小岛登陆战",
         ]
 
     def update_room(self):
